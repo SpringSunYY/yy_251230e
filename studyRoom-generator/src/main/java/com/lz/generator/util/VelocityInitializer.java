@@ -6,8 +6,8 @@ import com.lz.common.constant.Constants;
 
 /**
  * VelocityEngine工厂
- * 
- * @author ruoyi
+ *
+ * @author YY
  */
 public class VelocityInitializer
 {

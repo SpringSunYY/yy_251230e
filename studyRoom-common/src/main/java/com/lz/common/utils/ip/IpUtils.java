@@ -12,7 +12,7 @@ import eu.bitwalker.useragentutils.UserAgent;
 /**
  * 获取IP方法
  *
- * @author ruoyi
+ * @author YY
  */
 public class IpUtils
 {

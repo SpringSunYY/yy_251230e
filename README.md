@@ -77,7 +77,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * 位置信息对象 tb_address_info
  *
- * @author ruoyi
+ * @author YY
  * @date 2025-02-27
  */
 @TableName("tb_address_info")
@@ -156,7 +156,7 @@ import com.ruoyi.test.model.domain.AddressInfo;
 /**
  * 位置信息Vo对象 tb_address_info
  *
- * @author ruoyi
+ * @author YY
  * @date 2025-02-27
  */
 @Data
@@ -243,7 +243,7 @@ import com.ruoyi.test.model.domain.AddressInfo;
 /**
  * 位置信息Vo对象 tb_address_info
  *
- * @author ruoyi
+ * @author YY
  * @date 2025-02-27
  */
 @Data
@@ -309,7 +309,7 @@ import com.ruoyi.test.model.domain.AddressInfo;
 /**
  * 位置信息Vo对象 tb_address_info
  *
- * @author ruoyi
+ * @author YY
  * @date 2025-02-27
  */
 @Data
@@ -380,7 +380,7 @@ import com.ruoyi.test.model.domain.AddressInfo;
 /**
  * 位置信息Query对象 tb_address_info
  *
- * @author ruoyi
+ * @author YY
  * @date 2025-02-27
  */
 @Data

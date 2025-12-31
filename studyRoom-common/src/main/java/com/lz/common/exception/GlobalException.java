@@ -2,8 +2,8 @@ package com.lz.common.exception;
 
 /**
  * 全局异常
- * 
- * @author ruoyi
+ *
+ * @author YY
  */
 public class GlobalException extends RuntimeException
 {

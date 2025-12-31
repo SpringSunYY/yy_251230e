@@ -15,8 +15,8 @@ import com.lz.system.service.ISysRoleService;
 
 /**
  * 用户权限处理
- * 
- * @author ruoyi
+ *
+ * @author YY
  */
 @Component
 public class SysPermissionService
@@ -29,7 +29,7 @@ public class SysPermissionService
 
     /**
      * 获取角色数据权限
-     * 
+     *
      * @param user 用户信息
      * @return 角色权限信息
      */
@@ -50,7 +50,7 @@ public class SysPermissionService
 
     /**
      * 获取菜单数据权限
-     * 
+     *
      * @param user 用户信息
      * @return 菜单权限信息
      */

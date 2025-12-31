@@ -2,8 +2,8 @@ package com.lz.common.enums;
 
 /**
  * 操作状态
- * 
- * @author ruoyi
+ *
+ * @author YY
  *
  */
 public enum BusinessStatus

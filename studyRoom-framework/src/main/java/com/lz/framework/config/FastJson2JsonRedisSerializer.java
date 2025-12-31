@@ -11,8 +11,8 @@ import com.lz.common.constant.Constants;
 
 /**
  * Redis使用FastJson序列化
- * 
- * @author ruoyi
+ *
+ * @author YY
  */
 public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T>
 {

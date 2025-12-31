@@ -9,8 +9,8 @@ import com.lz.common.xss.Xss;
 
 /**
  * 通知公告表 sys_notice
- * 
- * @author ruoyi
+ *
+ * @author YY
  */
 public class SysNotice extends BaseEntity
 {

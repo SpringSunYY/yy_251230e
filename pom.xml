@@ -233,6 +233,11 @@
                 <artifactId>studyRoom-common</artifactId>
                 <version>${studyRoom.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.lz</groupId>
+                <artifactId>studyRoom-manage</artifactId>
+                <version>${studyRoom.version}</version>
+            </dependency>
 
 
         </dependencies>
@@ -245,6 +250,7 @@
         <module>studyRoom-quartz</module>
         <module>studyRoom-generator</module>
         <module>studyRoom-common</module>
+        <module>studyRoom-manage</module>
     </modules>
     <packaging>pom</packaging>
 

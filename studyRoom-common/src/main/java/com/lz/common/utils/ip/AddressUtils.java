@@ -11,8 +11,8 @@ import com.lz.common.utils.http.HttpUtils;
 
 /**
  * 获取地址类
- * 
- * @author ruoyi
+ *
+ * @author YY
  */
 public class AddressUtils
 {

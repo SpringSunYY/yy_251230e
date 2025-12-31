@@ -18,7 +18,7 @@ import com.lz.system.service.ISysUserService;
 /**
  * 用户验证处理
  *
- * @author ruoyi
+ * @author YY
  */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService
@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService
 
     @Autowired
     private ISysUserService userService;
-    
+
     @Autowired
     private SysPasswordService passwordService;
 
