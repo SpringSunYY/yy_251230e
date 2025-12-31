@@ -160,6 +160,14 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-view"
+            @click="handleCancel(scope.row)"
+            v-hasPermi="['manage:appointment:eidt']"
+          >取消预约
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['manage:appointment:remove']"
@@ -194,16 +202,16 @@
         <!--                          placeholder="请选择预约时间">-->
         <!--          </el-date-picker>-->
         <!--        </el-form-item>-->
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="form.status">
-            <el-radio
-              v-for="dict in dict.type.appointment_status"
-              :key="dict.value"
-              :label="dict.value"
-            >{{ dict.label }}
-            </el-radio>
-          </el-radio-group>
-        </el-form-item>
+        <!--        <el-form-item label="状态" prop="status">-->
+        <!--          <el-radio-group v-model="form.status">-->
+        <!--            <el-radio-->
+        <!--              v-for="dict in dict.type.appointment_status"-->
+        <!--              :key="dict.value"-->
+        <!--              :label="dict.value"-->
+        <!--            >{{ dict.label }}-->
+        <!--            </el-radio>-->
+        <!--          </el-radio-group>-->
+        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
@@ -349,6 +357,17 @@ export default {
     this.getList();
   },
   methods: {
+    handleCancel(row) {
+      let that = this;
+      //确认
+      that.$modal.confirm('确认要取消"' + row.userName + '"预约吗？').then(function () {
+        updateAppointment({id: row.id, status: 2})
+          .then(res => {
+            that.$modal.msgSuccess("取消成功");
+            that.getList();
+          })
+      })
+    },
     /** 查询预约信息列表 */
     getList() {
       this.loading = true;
