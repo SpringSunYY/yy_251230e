@@ -1,29 +1,28 @@
 package com.lz.manage.service.impl;
 
-import java.util.*;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-import javax.validation.Validator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.lz.common.utils.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
+import com.lz.common.utils.DateUtils;
+import com.lz.common.utils.SecurityUtils;
+import com.lz.common.utils.StringUtils;
 import com.lz.common.utils.bean.BeanValidators;
 import com.lz.common.utils.spring.SpringUtils;
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lz.common.utils.DateUtils;
-import javax.annotation.Resource;
-import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lz.manage.mapper.StudyRoomMapper;
 import com.lz.manage.model.domain.StudyRoom;
-import com.lz.manage.service.IStudyRoomService;
 import com.lz.manage.model.dto.studyRoom.StudyRoomQuery;
 import com.lz.manage.model.vo.studyRoom.StudyRoomVo;
+import com.lz.manage.service.IStudyRoomService;
+import com.lz.system.service.ISysUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import javax.validation.Validator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 自习室信息Service业务层处理
@@ -32,21 +31,26 @@ import com.lz.manage.model.vo.studyRoom.StudyRoomVo;
  * @date 2025-12-31
  */
 @Service
-public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom> implements IStudyRoomService
-{
+public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom> implements IStudyRoomService {
     private static final Logger log = LoggerFactory.getLogger(StudyRoomServiceImpl.class);
 
-    /** 导入用户数据校验器 */
+    /**
+     * 导入用户数据校验器
+     */
     private static Validator validator;
 
     @Resource
     private StudyRoomMapper studyRoomMapper;
+
+    @Resource
+    private ISysUserService sysUserService;
 
     {
         validator = SpringUtils.getBean(Validator.class);
     }
 
     //region mybatis代码
+
     /**
      * 查询自习室信息
      *
@@ -54,8 +58,7 @@ public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom
      * @return 自习室信息
      */
     @Override
-    public StudyRoom selectStudyRoomById(Long id)
-    {
+    public StudyRoom selectStudyRoomById(Long id) {
         return studyRoomMapper.selectStudyRoomById(id);
     }
 
@@ -66,9 +69,15 @@ public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom
      * @return 自习室信息
      */
     @Override
-    public List<StudyRoom> selectStudyRoomList(StudyRoom studyRoom)
-    {
-        return studyRoomMapper.selectStudyRoomList(studyRoom);
+    public List<StudyRoom> selectStudyRoomList(StudyRoom studyRoom) {
+        List<StudyRoom> studyRooms = studyRoomMapper.selectStudyRoomList(studyRoom);
+        for (StudyRoom info : studyRooms) {
+            SysUser sysUser = sysUserService.selectUserById(info.getUserId());
+            if (StringUtils.isNotNull(sysUser)) {
+                info.setUserName(sysUser.getUserName());
+            }
+        }
+        return studyRooms;
     }
 
     /**
@@ -78,8 +87,8 @@ public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom
      * @return 结果
      */
     @Override
-    public int insertStudyRoom(StudyRoom studyRoom)
-    {
+    public int insertStudyRoom(StudyRoom studyRoom) {
+        studyRoom.setUserId(SecurityUtils.getUserId());
         studyRoom.setCreateTime(DateUtils.getNowDate());
         return studyRoomMapper.insertStudyRoom(studyRoom);
     }
@@ -91,8 +100,7 @@ public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom
      * @return 结果
      */
     @Override
-    public int updateStudyRoom(StudyRoom studyRoom)
-    {
+    public int updateStudyRoom(StudyRoom studyRoom) {
         studyRoom.setUpdateTime(DateUtils.getNowDate());
         return studyRoomMapper.updateStudyRoom(studyRoom);
     }
@@ -104,8 +112,7 @@ public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom
      * @return 结果
      */
     @Override
-    public int deleteStudyRoomByIds(Long[] ids)
-    {
+    public int deleteStudyRoomByIds(Long[] ids) {
         return studyRoomMapper.deleteStudyRoomByIds(ids);
     }
 
@@ -116,13 +123,13 @@ public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom
      * @return 结果
      */
     @Override
-    public int deleteStudyRoomById(Long id)
-    {
+    public int deleteStudyRoomById(Long id) {
         return studyRoomMapper.deleteStudyRoomById(id);
     }
+
     //endregion
     @Override
-    public QueryWrapper<StudyRoom> getQueryWrapper(StudyRoomQuery studyRoomQuery){
+    public QueryWrapper<StudyRoom> getQueryWrapper(StudyRoomQuery studyRoomQuery) {
         QueryWrapper<StudyRoom> queryWrapper = new QueryWrapper<>();
         //如果不使用params可以删除
         Map<String, Object> params = studyRoomQuery.getParams();
@@ -130,16 +137,16 @@ public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom
             params = new HashMap<>();
         }
         Long id = studyRoomQuery.getId();
-        queryWrapper.eq( StringUtils.isNotNull(id),"id",id);
+        queryWrapper.eq(StringUtils.isNotNull(id), "id", id);
 
         String name = studyRoomQuery.getName();
-        queryWrapper.like(StringUtils.isNotEmpty(name) ,"name",name);
+        queryWrapper.like(StringUtils.isNotEmpty(name), "name", name);
 
         String status = studyRoomQuery.getStatus();
-        queryWrapper.eq(StringUtils.isNotEmpty(status) ,"status",status);
+        queryWrapper.eq(StringUtils.isNotEmpty(status), "status", status);
 
         Date createTime = studyRoomQuery.getCreateTime();
-        queryWrapper.eq( StringUtils.isNotNull(createTime),"create_time",createTime);
+        queryWrapper.eq(StringUtils.isNotNull(createTime), "create_time", createTime);
 
         return queryWrapper;
     }
@@ -155,59 +162,47 @@ public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom
     /**
      * 导入自习室信息数据
      *
-     * @param studyRoomList 自习室信息数据列表
+     * @param studyRoomList   自习室信息数据列表
      * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
-     * @param operName 操作用户
+     * @param operName        操作用户
      * @return 结果
      */
     @Override
-    public String importStudyRoomData(List<StudyRoom> studyRoomList, Boolean isUpdateSupport, String operName)
-    {
-        if (StringUtils.isNull(studyRoomList) || studyRoomList.size() == 0)
-        {
+    public String importStudyRoomData(List<StudyRoom> studyRoomList, Boolean isUpdateSupport, String operName) {
+        if (StringUtils.isNull(studyRoomList) || studyRoomList.size() == 0) {
             throw new ServiceException("导入自习室信息数据不能为空！");
         }
         int successNum = 0;
         int failureNum = 0;
         StringBuilder successMsg = new StringBuilder();
         StringBuilder failureMsg = new StringBuilder();
-        for (StudyRoom studyRoom : studyRoomList)
-        {
-            try
-            {
+        for (StudyRoom studyRoom : studyRoomList) {
+            try {
                 // 验证是否存在这个自习室信息
                 Long id = studyRoom.getId();
                 StudyRoom studyRoomExist = null;
-                if (StringUtils.isNotNull(id))
-                {
+                if (StringUtils.isNotNull(id)) {
                     studyRoomExist = studyRoomMapper.selectStudyRoomById(id);
                 }
-                if (StringUtils.isNull(studyRoomExist))
-                {
+                if (StringUtils.isNull(studyRoomExist)) {
                     BeanValidators.validateWithException(validator, studyRoom);
                     studyRoom.setCreateTime(DateUtils.getNowDate());
                     studyRoomMapper.insertStudyRoom(studyRoom);
                     successNum++;
                     String idStr = StringUtils.isNotNull(id) ? id.toString() : "新记录";
                     successMsg.append("<br/>" + successNum + "、自习室信息 " + idStr + " 导入成功");
-                }
-                else if (isUpdateSupport)
-                {
+                } else if (isUpdateSupport) {
                     BeanValidators.validateWithException(validator, studyRoom);
                     studyRoom.setUpdateTime(DateUtils.getNowDate());
                     studyRoomMapper.updateStudyRoom(studyRoom);
                     successNum++;
                     successMsg.append("<br/>" + successNum + "、自习室信息 " + id.toString() + " 更新成功");
-                }
-                else
-                {
+                } else {
                     failureNum++;
                     String idStr = StringUtils.isNotNull(id) ? id.toString() : "未知";
                     failureMsg.append("<br/>" + failureNum + "、自习室信息 " + idStr + " 已存在");
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 failureNum++;
                 Long id = studyRoom.getId();
                 String idStr = StringUtils.isNotNull(id) ? id.toString() : "未知";
@@ -216,13 +211,10 @@ public class StudyRoomServiceImpl extends ServiceImpl<StudyRoomMapper, StudyRoom
                 log.error(msg, e);
             }
         }
-        if (failureNum > 0)
-        {
+        if (failureNum > 0) {
             failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据格式不正确，错误如下：");
             throw new ServiceException(failureMsg.toString());
-        }
-        else
-        {
+        } else {
             successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
         }
         return successMsg.toString();
