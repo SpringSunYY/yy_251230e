@@ -130,10 +130,7 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
                 new ServiceException("座位不存在"));
         //查询当天座位是否预约
         String appointmentTimeStr = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, appointment.getAppointmentTime());
-        List<Appointment> list = this.list(new LambdaQueryWrapper<Appointment>()
-                .eq(Appointment::getSeatId, seat.getId())
-                .eq(Appointment::getStatus, AppointmentStatusEnum.APPOINTMENT_STATUS_0.getValue())
-                .apply("DATE_FORMAT(appointment_time, '%Y-%m-%d') = {0}", appointmentTimeStr));
+        List<Appointment> list = getAppointments(seat.getId(), appointmentTimeStr);
         ThrowUtils.throwIf(StringUtils.isNotEmpty(list),
                 new ServiceException("该座位已预约这一天已被预约"));
         //如果预约时间刚好是今天
@@ -155,6 +152,15 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
                 studyRoom.getName(), seat.getName(), appointmentTimeStr));
         notificationService.insertNotification(notification);
         return appointmentMapper.insertAppointment(appointment);
+    }
+
+    @Override
+    public List<Appointment> getAppointments(Long seatId, String appointmentTimeStr) {
+        List<Appointment> list = this.list(new LambdaQueryWrapper<Appointment>()
+                .eq(Appointment::getSeatId, seatId)
+                .eq(Appointment::getStatus, AppointmentStatusEnum.APPOINTMENT_STATUS_0.getValue())
+                .apply("DATE_FORMAT(appointment_time, '%Y-%m-%d') = {0}", appointmentTimeStr));
+        return list;
     }
 
     /**
@@ -285,6 +291,41 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
             successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
         }
         return successMsg.toString();
+    }
+
+    @Override
+    public void autoUpdateAppointment() {
+        //首先查询到所有的座位信息
+        List<Seat> seats = seatService.list();
+        Date nowDate = DateUtils.getNowDate();
+        String dateToStr = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, nowDate);
+        List<Notification> notifications = new ArrayList<>();
+        for (Seat seat : seats) {
+            List<Appointment> appointments = this.getAppointments(seat.getId(), dateToStr);
+            if (StringUtils.isEmpty(appointments)) {
+                seat.setStatus(SeatStatusEnum.SEAT_STATUS_0.getValue());
+            } else {
+                seat.setStatus(SeatStatusEnum.SEAT_STATUS_1.getValue());
+                Notification notification = new Notification();
+                notification.setUserId(appointments.get(0).getUserId());
+                notification.setTitile("您预约的座位已到时间，请立即前往");
+                notification.setContent(StringUtils.format("您预约的教室已到时间：请立即前往，如果需要取消请在预约记录取消"));
+                notifications.add(notification);
+            }
+        }
+        notificationService.saveBatch(notifications);
+        seatService.updateBatchById(seats);
+        //查询所有的以预约信息
+        List<Appointment> appointments = this.list(new LambdaQueryWrapper<Appointment>()
+                .eq(Appointment::getStatus, AppointmentStatusEnum.APPOINTMENT_STATUS_0.getValue()));
+        for (Appointment appointment : appointments) {
+            //判断预约时间是否已经过了
+            Date date = DateUtils.addDays(appointment.getAppointmentTime(), 1);
+            if (date.before(nowDate)) {
+                appointment.setStatus(AppointmentStatusEnum.APPOINTMENT_STATUS_1.getValue());
+            }
+        }
+        this.updateBatchById(appointments);
     }
 
 }

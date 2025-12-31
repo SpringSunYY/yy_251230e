@@ -35,6 +35,11 @@
             <artifactId>studyRoom-common</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.lz</groupId>
+            <artifactId>studyRoom-manage</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

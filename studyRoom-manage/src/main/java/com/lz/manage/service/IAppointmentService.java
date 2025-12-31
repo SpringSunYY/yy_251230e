@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 /**
  * 预约信息Service接口
- * 
+ *
  * @author YY
  * @date 2025-12-31
  */
@@ -18,7 +18,7 @@ public interface IAppointmentService extends IService<Appointment>
     //region mybatis代码
     /**
      * 查询预约信息
-     * 
+     *
      * @param id 预约信息主键
      * @return 预约信息
      */
@@ -26,7 +26,7 @@ public interface IAppointmentService extends IService<Appointment>
 
     /**
      * 查询预约信息列表
-     * 
+     *
      * @param appointment 预约信息
      * @return 预约信息集合
      */
@@ -34,15 +34,17 @@ public interface IAppointmentService extends IService<Appointment>
 
     /**
      * 新增预约信息
-     * 
+     *
      * @param appointment 预约信息
      * @return 结果
      */
     public int insertAppointment(Appointment appointment);
 
+    List<Appointment> getAppointments(Long seatId, String appointmentTimeStr);
+
     /**
      * 修改预约信息
-     * 
+     *
      * @param appointment 预约信息
      * @return 结果
      */
@@ -50,7 +52,7 @@ public interface IAppointmentService extends IService<Appointment>
 
     /**
      * 批量删除预约信息
-     * 
+     *
      * @param ids 需要删除的预约信息主键集合
      * @return 结果
      */
@@ -58,7 +60,7 @@ public interface IAppointmentService extends IService<Appointment>
 
     /**
      * 删除预约信息信息
-     * 
+     *
      * @param id 预约信息主键
      * @return 结果
      */
@@ -89,4 +91,7 @@ public interface IAppointmentService extends IService<Appointment>
      * @return 结果
      */
     public String importAppointmentData(List<Appointment> appointmentList, Boolean isUpdateSupport, String operName);
+
+    void autoUpdateAppointment();
+
 }
