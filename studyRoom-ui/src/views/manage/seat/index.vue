@@ -143,6 +143,14 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-plus"
+            @click="handleAppointment(scope.row)"
+            v-hasPermi="['manage:appointment:add']"
+          >预约
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['manage:seat:remove']"
@@ -209,18 +217,42 @@
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 添加或修改预约信息对话框 -->
+    <el-dialog :title="title" :visible.sync="openAppointment" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="预约时间" prop="appointmentTime">
+          <el-date-picker clearable
+                          v-model="form.appointmentTime"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="请选择预约时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFormAppointment">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {listSeat, getSeat, delSeat, addSeat, updateSeat, importSeat, importTemplateSeat} from "@/api/manage/seat";
 import {getToken} from "@/utils/auth";
+import {addAppointment} from "@/api/manage/appointment";
 
 export default {
   name: "Seat",
   dicts: ['seat_status'],
   data() {
     return {
+      //打开预约
+      openAppointment: false,
       //自习室编号
       roomId: null,
       //表格展示列
@@ -318,6 +350,20 @@ export default {
     }
   },
   methods: {
+    /**预约**/
+    handleAppointment(row) {
+      this.openAppointment = true;
+      this.reset()
+      this.form.seatId = row.id
+      this.form.roomId = row.roomId
+    },
+    submitFormAppointment() {
+      addAppointment(this.form).then(response => {
+        this.$modal.msgSuccess("预约成功");
+        this.openAppointment = false;
+        this.getList();
+      });
+    },
     /** 查询座位信息列表 */
     getList() {
       this.loading = true;
@@ -335,6 +381,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.openAppointment = false
       this.reset();
     },
     // 表单重置

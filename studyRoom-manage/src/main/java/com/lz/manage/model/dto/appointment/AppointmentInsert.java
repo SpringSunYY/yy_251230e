@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.NonNull;
 import org.springframework.beans.BeanUtils;
 import com.lz.manage.model.domain.Appointment;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * 预约信息Vo对象 tb_appointment
  *
@@ -25,6 +29,7 @@ public class AppointmentInsert implements Serializable
 
     /** 预约时间 */
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "预约时间不能为空")
     private Date appointmentTime;
 
     /** 状态 */
