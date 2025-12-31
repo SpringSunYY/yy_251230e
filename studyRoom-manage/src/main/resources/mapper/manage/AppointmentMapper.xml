@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lz.manage.mapper.AppointmentMapper">
-    
+
     <resultMap type="Appointment" id="AppointmentResult">
         <result property="id"    column="id"    />
         <result property="roomId"    column="room_id"    />
@@ -22,15 +22,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectAppointmentList" parameterType="Appointment" resultMap="AppointmentResult">
         <include refid="selectAppointmentVo"/>
-        <where>  
+        <where>
             <if test="id != null "> and id = #{id}</if>
             <if test="params.beginAppointmentTime != null and params.beginAppointmentTime != '' and params.endAppointmentTime != null and params.endAppointmentTime != ''"> and DATE_FORMAT(appointment_time, '%Y-%m-%d') between #{params.beginAppointmentTime} and #{params.endAppointmentTime}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}</if>
         </where>
+        order by create_time desc
     </select>
-    
+
     <select id="selectAppointmentById" parameterType="Long" resultMap="AppointmentResult">
         <include refid="selectAppointmentVo"/>
         where id = #{id}
@@ -80,7 +81,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteAppointmentByIds" parameterType="String">
-        delete from tb_appointment where id in 
+        delete from tb_appointment where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

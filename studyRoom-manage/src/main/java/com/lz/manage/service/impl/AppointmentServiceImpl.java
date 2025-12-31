@@ -17,6 +17,7 @@ import com.lz.manage.model.domain.Seat;
 import com.lz.manage.model.domain.StudyRoom;
 import com.lz.manage.model.dto.appointment.AppointmentQuery;
 import com.lz.manage.model.enums.AppointmentStatusEnum;
+import com.lz.manage.model.enums.SeatStatusEnum;
 import com.lz.manage.model.enums.StudyRoomStatusEnum;
 import com.lz.manage.model.vo.appointment.AppointmentVo;
 import com.lz.manage.service.IAppointmentService;
@@ -110,6 +111,9 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
      */
     @Override
     public int insertAppointment(Appointment appointment) {
+        //如果预约时间小于当前时间
+        ThrowUtils.throwIf(appointment.getAppointmentTime().before(DateUtils.getNowDate()),
+                new ServiceException("预约时间不能早于当前时间"));
         //首先查询教师状态是否开启
         StudyRoom studyRoom = studyRoomService.selectStudyRoomById(appointment.getRoomId());
         ThrowUtils.throwIf(StringUtils.isNull(studyRoom), new ServiceException("教室不存在"));
@@ -120,12 +124,20 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
         ThrowUtils.throwIf(StringUtils.isNull(seat),
                 new ServiceException("座位不存在"));
         //查询当天座位是否预约
+        String appointmentTimeStr = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, appointment.getAppointmentTime());
         List<Appointment> list = this.list(new LambdaQueryWrapper<Appointment>()
-                .eq(Appointment::getId, seat.getId())
+                .eq(Appointment::getSeatId, seat.getId())
                 .eq(Appointment::getStatus, AppointmentStatusEnum.APPOINTMENT_STATUS_0.getValue())
-                .apply("DATE_FORMAT(appointment_time, '%Y-%m-%d') = DATE_FORMAT({0}, '%Y-%m-%d')", appointment.getAppointmentTime()));
+                .apply("DATE_FORMAT(appointment_time, '%Y-%m-%d') = {0}", appointmentTimeStr));
         ThrowUtils.throwIf(StringUtils.isNotEmpty(list),
                 new ServiceException("该座位已预约这一天已被预约"));
+        //如果预约时间刚好是今天
+        if (appointmentTimeStr
+                .equals(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, DateUtils.getNowDate()))) {
+            //更新座位已被预约
+            seat.setStatus(SeatStatusEnum.SEAT_STATUS_1.getValue());
+            seatService.updateById(seat);
+        }
         appointment.setUserId(SecurityUtils.getUserId());
         appointment.setStatus(AppointmentStatusEnum.APPOINTMENT_STATUS_0.getValue());
         appointment.setCreateTime(DateUtils.getNowDate());
