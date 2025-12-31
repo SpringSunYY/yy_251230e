@@ -2,6 +2,7 @@ package com.lz.manage.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
 import com.lz.common.utils.DateUtils;
@@ -67,6 +68,7 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
      * @param notification 通知
      * @return 通知
      */
+    @DataScope(deptAlias = "tb_notification", userAlias = "tb_notification")
     @Override
     public List<Notification> selectNotificationList(Notification notification) {
         List<Notification> notifications = notificationMapper.selectNotificationList(notification);

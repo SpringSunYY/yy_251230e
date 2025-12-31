@@ -162,7 +162,7 @@
             type="text"
             icon="el-icon-view"
             @click="handleCancel(scope.row)"
-            v-hasPermi="['manage:appointment:eidt']"
+            v-hasPermi="['manage:appointment:edit']"
           >取消预约
           </el-button>
           <el-button
@@ -250,13 +250,11 @@
 
 <script>
 import {
-  listAppointment,
-  getAppointment,
-  delAppointment,
   addAppointment,
-  updateAppointment,
-  importAppointment,
-  importTemplateAppointment
+  delAppointment,
+  getAppointment,
+  listAppointment,
+  updateAppointment
 } from "@/api/manage/appointment";
 import {getToken} from "@/utils/auth";
 

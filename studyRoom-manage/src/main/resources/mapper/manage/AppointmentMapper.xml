@@ -23,11 +23,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectAppointmentList" parameterType="Appointment" resultMap="AppointmentResult">
         <include refid="selectAppointmentVo"/>
         <where>
-            <if test="id != null "> and id = #{id}</if>
-            <if test="params.beginAppointmentTime != null and params.beginAppointmentTime != '' and params.endAppointmentTime != null and params.endAppointmentTime != ''"> and DATE_FORMAT(appointment_time, '%Y-%m-%d') between #{params.beginAppointmentTime} and #{params.endAppointmentTime}</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="params.beginAppointmentTime != null and params.beginAppointmentTime != '' and params.endAppointmentTime != null and params.endAppointmentTime != ''">
+                and DATE_FORMAT(appointment_time, '%Y-%m-%d') between #{params.beginAppointmentTime} and
+                #{params.endAppointmentTime}
+            </if>
+            <if test="status != null  and status != ''">and status = #{status}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
+            </if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
         </where>
         order by create_time desc
     </select>

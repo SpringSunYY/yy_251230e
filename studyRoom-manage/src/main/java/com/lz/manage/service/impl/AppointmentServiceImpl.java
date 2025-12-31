@@ -3,6 +3,7 @@ package com.lz.manage.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lz.common.annotation.DataScope;
 import com.lz.common.core.domain.entity.SysUser;
 import com.lz.common.exception.ServiceException;
 import com.lz.common.utils.DateUtils;
@@ -88,6 +89,7 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
      * @param appointment 预约信息
      * @return 预约信息
      */
+    @DataScope(deptAlias = "tb_appointment", userAlias = "tb_appointment")
     @Override
     public List<Appointment> selectAppointmentList(Appointment appointment) {
         List<Appointment> appointments = appointmentMapper.selectAppointmentList(appointment);
@@ -117,7 +119,8 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
     @Override
     public int insertAppointment(Appointment appointment) {
         //如果预约时间小于当前时间
-        ThrowUtils.throwIf(appointment.getAppointmentTime().before(DateUtils.getNowDate()),
+        Date nowDate = DateUtils.getNowDate();
+        ThrowUtils.throwIf(appointment.getAppointmentTime().before(DateUtils.addDays(nowDate,-1)),
                 new ServiceException("预约时间不能早于当前时间"));
         //首先查询教师状态是否开启
         StudyRoom studyRoom = studyRoomService.selectStudyRoomById(appointment.getRoomId());
@@ -135,14 +138,14 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
                 new ServiceException("该座位已预约这一天已被预约"));
         //如果预约时间刚好是今天
         if (appointmentTimeStr
-                .equals(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, DateUtils.getNowDate()))) {
+                .equals(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, nowDate))) {
             //更新座位已被预约
             seat.setStatus(SeatStatusEnum.SEAT_STATUS_1.getValue());
             seatService.updateById(seat);
         }
         appointment.setUserId(SecurityUtils.getUserId());
         appointment.setStatus(AppointmentStatusEnum.APPOINTMENT_STATUS_0.getValue());
-        appointment.setCreateTime(DateUtils.getNowDate());
+        appointment.setCreateTime(nowDate);
 
         //预约成功，发送消息提醒
         Notification notification = new Notification();
