@@ -31,6 +31,9 @@ public class SeatQuery implements Serializable
     /** 状态 */
     private String status;
 
+    /** 教室 */
+    private Long roomId;
+
     /** 创建时间 */
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date createTime;

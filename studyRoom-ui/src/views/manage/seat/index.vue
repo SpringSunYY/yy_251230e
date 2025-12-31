@@ -53,7 +53,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['manage:seat:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -64,7 +65,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['manage:seat:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -75,7 +77,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['manage:seat:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -85,7 +88,8 @@
           size="mini"
           @click="handleImport"
           v-hasPermi="['manage:seat:import']"
-        >导入</el-button>
+        >导入
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -95,34 +99,38 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['manage:seat:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="seatList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id" />
-        <el-table-column label="教室" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible" prop="roomId" />
-        <el-table-column label="名称" :show-overflow-tooltip="true" align="center" v-if="columns[2].visible" prop="name" />
-        <el-table-column label="状态" align="center" v-if="columns[3].visible" prop="status">
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
+      <el-table-column label="教室" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible"
+                       prop="roomName"/>
+      <el-table-column label="名称" :show-overflow-tooltip="true" align="center" v-if="columns[2].visible" prop="name"/>
+      <el-table-column label="状态" align="center" v-if="columns[3].visible" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.seat_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
-        <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible" prop="remark" />
-        <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[5].visible" prop="userId" />
-        <el-table-column label="创建时间" align="center" v-if="columns[6].visible" prop="createTime" width="180">
+      <el-table-column label="备注" :show-overflow-tooltip="true" align="center" v-if="columns[4].visible"
+                       prop="remark"/>
+      <el-table-column label="创建人" :show-overflow-tooltip="true" align="center" v-if="columns[5].visible"
+                       prop="userName"/>
+      <el-table-column label="创建时间" align="center" v-if="columns[6].visible" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-        <el-table-column label="更新时间" align="center" v-if="columns[7].visible" prop="updateTime" width="180">
+      <el-table-column label="更新时间" align="center" v-if="columns[7].visible" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -130,14 +138,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['manage:seat:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['manage:seat:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -153,11 +163,8 @@
     <!-- 添加或修改座位信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="教室" prop="roomId">
-          <el-input v-model="form.roomId" placeholder="请输入教室" />
-        </el-form-item>
         <el-form-item label="名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入名称" />
+          <el-input v-model="form.name" placeholder="请输入名称"/>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
@@ -165,11 +172,12 @@
               v-for="dict in dict.type.seat_status"
               :key="dict.value"
               :label="dict.value"
-            >{{dict.label}}</el-radio>
+            >{{ dict.label }}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -180,15 +188,20 @@
 
     <!-- 座位信息导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
-      <el-upload ref="upload" :limit="1" accept=".xlsx, .xls" :headers="upload.headers" :action="upload.url + '?updateSupport=' + upload.updateSupport" :disabled="upload.isUploading" :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess" :auto-upload="false" drag>
+      <el-upload ref="upload" :limit="1" accept=".xlsx, .xls" :headers="upload.headers"
+                 :action="upload.url + '?updateSupport=' + upload.updateSupport" :disabled="upload.isUploading"
+                 :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess" :auto-upload="false" drag>
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip text-center" slot="tip">
           <div class="el-upload__tip" slot="tip">
-            <el-checkbox v-model="upload.updateSupport" />是否更新已经存在的座位信息数据
+            <el-checkbox v-model="upload.updateSupport"/>
+            是否更新已经存在的座位信息数据
           </div>
           <span>仅允许导入xls、xlsx格式文件。</span>
-          <el-link type="primary" :underline="false" style="font-size: 12px; vertical-align: baseline" @click="importTemplate">下载模板</el-link>
+          <el-link type="primary" :underline="false" style="font-size: 12px; vertical-align: baseline"
+                   @click="importTemplate">下载模板
+          </el-link>
         </div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
@@ -200,25 +213,27 @@
 </template>
 
 <script>
-import { listSeat, getSeat, delSeat, addSeat, updateSeat, importSeat, importTemplateSeat } from "@/api/manage/seat";
-import { getToken } from "@/utils/auth";
+import {listSeat, getSeat, delSeat, addSeat, updateSeat, importSeat, importTemplateSeat} from "@/api/manage/seat";
+import {getToken} from "@/utils/auth";
 
 export default {
   name: "Seat",
   dicts: ['seat_status'],
   data() {
     return {
+      //自习室编号
+      roomId: null,
       //表格展示列
       columns: [
-        { key: 0, label: '编号', visible: true },
-          { key: 1, label: '教室', visible: true },
-          { key: 2, label: '名称', visible: true },
-          { key: 3, label: '状态', visible: true },
-          { key: 4, label: '备注', visible: true },
-          { key: 5, label: '创建人', visible: true },
-          { key: 6, label: '创建时间', visible: true },
-          { key: 7, label: '更新时间', visible: true },
-        ],
+        {key: 0, label: '编号', visible: true},
+        {key: 1, label: '教室', visible: true},
+        {key: 2, label: '名称', visible: true},
+        {key: 3, label: '状态', visible: true},
+        {key: 4, label: '备注', visible: true},
+        {key: 5, label: '创建人', visible: true},
+        {key: 6, label: '创建时间', visible: true},
+        {key: 7, label: '更新时间', visible: true},
+      ],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -263,7 +278,7 @@ export default {
         // 是否更新已经存在的座位信息数据
         updateSupport: 0,
         // 设置上传的请求头部
-        headers: { Authorization: "Bearer " + getToken() },
+        headers: {Authorization: "Bearer " + getToken()},
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/manage/seat/importData",
         // 下载模板的地址
@@ -272,25 +287,35 @@ export default {
       // 表单校验
       rules: {
         roomId: [
-          { required: true, message: "教室不能为空", trigger: "blur" }
+          {required: true, message: "教室不能为空", trigger: "blur"}
         ],
         name: [
-          { required: true, message: "名称不能为空", trigger: "blur" }
+          {required: true, message: "名称不能为空", trigger: "blur"}
         ],
         status: [
-          { required: true, message: "状态不能为空", trigger: "change" }
+          {required: true, message: "状态不能为空", trigger: "change"}
         ],
         userId: [
-          { required: true, message: "创建人不能为空", trigger: "blur" }
+          {required: true, message: "创建人不能为空", trigger: "blur"}
         ],
         createTime: [
-          { required: true, message: "创建时间不能为空", trigger: "blur" }
+          {required: true, message: "创建时间不能为空", trigger: "blur"}
         ],
       }
     };
   },
   created() {
+    this.roomId = this.$route.query.roomId;
+    this.queryParams.roomId = this.roomId;
     this.getList();
+  },
+  watch: {
+    // 监听路由
+    $route(to, from) {
+      this.roomId = to.query.roomId;
+      this.queryParams.roomId = this.roomId;
+      this.getList();
+    }
   },
   methods: {
     /** 查询座位信息列表 */
@@ -316,7 +341,7 @@ export default {
     reset() {
       this.form = {
         id: null,
-        roomId: null,
+        roomId: this.roomId,
         name: null,
         status: null,
         remark: null,
@@ -335,12 +360,13 @@ export default {
     resetQuery() {
       this.daterangeCreateTime = [];
       this.resetForm("queryForm");
+      this.queryParams.roomId = this.roomId
       this.handleQuery();
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -382,12 +408,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除座位信息编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除座位信息编号为"' + ids + '"的数据项？').then(function () {
         return delSeat(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -402,8 +429,7 @@ export default {
     },
     /** 下载模板操作 */
     importTemplate() {
-      this.download(this.upload.templateUrl, {
-      }, `seat_template_${new Date().getTime()}.xlsx`)
+      this.download(this.upload.templateUrl, {}, `seat_template_${new Date().getTime()}.xlsx`)
     },
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {
@@ -414,7 +440,7 @@ export default {
       this.upload.open = false;
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();
-      this.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", { dangerouslyUseHTMLString: true });
+      this.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", {dangerouslyUseHTMLString: true});
       this.getList();
     },
     // 提交上传文件

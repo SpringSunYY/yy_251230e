@@ -27,14 +27,14 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker clearable
-                        v-model="queryParams.createTime"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="请选择创建时间">
-        </el-date-picker>
-      </el-form-item>
+      <!--      <el-form-item label="创建时间" prop="createTime">-->
+      <!--        <el-date-picker clearable-->
+      <!--                        v-model="queryParams.createTime"-->
+      <!--                        type="date"-->
+      <!--                        value-format="yyyy-MM-dd"-->
+      <!--                        placeholder="请选择创建时间">-->
+      <!--        </el-date-picker>-->
+      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -105,7 +105,13 @@
     <el-table v-loading="loading" :data="studyRoomList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="编号" align="center" v-if="columns[0].visible" prop="id"/>
-      <el-table-column label="名称" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible" prop="name"/>
+      <el-table-column label="名称" :show-overflow-tooltip="true" align="center" v-if="columns[1].visible" prop="name">
+        <template slot-scope="scope">
+          <router-link :to="{ name: 'Seat', query: { roomId: scope.row.id } }" class="link-type">
+            <span>{{ scope.row.name }}</span>
+          </router-link>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" v-if="columns[2].visible" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.study_room_status" :value="scope.row.status"/>
