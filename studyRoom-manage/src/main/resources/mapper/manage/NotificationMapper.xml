@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lz.manage.mapper.NotificationMapper">
-    
+
     <resultMap type="Notification" id="NotificationResult">
-        <result property="id"    column="id"    />
-        <result property="userId"    column="user_id"    />
-        <result property="titile"    column="titile"    />
-        <result property="content"    column="content"    />
-        <result property="readFlag"    column="read_flag"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="readTime"    column="read_time"    />
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="titile" column="titile"/>
+        <result property="content" column="content"/>
+        <result property="readFlag" column="read_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="readTime" column="read_time"/>
     </resultMap>
 
     <sql id="selectNotificationVo">
-        select id, user_id, titile, content, read_flag, create_time, read_time from tb_notification
+        select id, user_id, titile, content, read_flag, create_time, read_time
+        from tb_notification
     </sql>
 
     <select id="selectNotificationList" parameterType="Notification" resultMap="NotificationResult">
         <include refid="selectNotificationVo"/>
-        <where>  
-            <if test="id != null "> and id = #{id}</if>
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="titile != null  and titile != ''"> and titile like concat('%', #{titile}, '%')</if>
-            <if test="readFlag != null  and readFlag != ''"> and read_flag = #{readFlag}</if>
-            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="titile != null  and titile != ''">and titile like concat('%', #{titile}, '%')</if>
+            <if test="readFlag != null  and readFlag != ''">and read_flag = #{readFlag}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+                and DATE_FORMAT(create_time, '%Y-%m-%d') between #{params.beginCreateTime} and #{params.endCreateTime}
+            </if>
         </where>
+        order by create_time desc
     </select>
-    
+
     <select id="selectNotificationById" parameterType="Long" resultMap="NotificationResult">
         <include refid="selectNotificationVo"/>
         where id = #{id}
@@ -43,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="readFlag != null and readFlag != ''">read_flag,</if>
             <if test="createTime != null">create_time,</if>
             <if test="readTime != null">read_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
             <if test="titile != null and titile != ''">#{titile},</if>
@@ -51,7 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="readFlag != null and readFlag != ''">#{readFlag},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="readTime != null">#{readTime},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateNotification" parameterType="Notification">
@@ -68,11 +72,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteNotificationById" parameterType="Long">
-        delete from tb_notification where id = #{id}
+        delete
+        from tb_notification
+        where id = #{id}
     </delete>
 
     <delete id="deleteNotificationByIds" parameterType="String">
-        delete from tb_notification where id in 
+        delete from tb_notification where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

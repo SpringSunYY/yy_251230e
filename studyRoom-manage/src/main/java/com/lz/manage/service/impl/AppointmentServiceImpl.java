@@ -13,6 +13,7 @@ import com.lz.common.utils.bean.BeanValidators;
 import com.lz.common.utils.spring.SpringUtils;
 import com.lz.manage.mapper.AppointmentMapper;
 import com.lz.manage.model.domain.Appointment;
+import com.lz.manage.model.domain.Notification;
 import com.lz.manage.model.domain.Seat;
 import com.lz.manage.model.domain.StudyRoom;
 import com.lz.manage.model.dto.appointment.AppointmentQuery;
@@ -21,6 +22,7 @@ import com.lz.manage.model.enums.SeatStatusEnum;
 import com.lz.manage.model.enums.StudyRoomStatusEnum;
 import com.lz.manage.model.vo.appointment.AppointmentVo;
 import com.lz.manage.service.IAppointmentService;
+import com.lz.manage.service.INotificationService;
 import com.lz.manage.service.ISeatService;
 import com.lz.manage.service.IStudyRoomService;
 import com.lz.system.service.ISysUserService;
@@ -59,6 +61,9 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
 
     @Resource
     private IStudyRoomService studyRoomService;
+
+    @Resource
+    private INotificationService notificationService;
 
     {
         validator = SpringUtils.getBean(Validator.class);
@@ -141,6 +146,14 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
         appointment.setUserId(SecurityUtils.getUserId());
         appointment.setStatus(AppointmentStatusEnum.APPOINTMENT_STATUS_0.getValue());
         appointment.setCreateTime(DateUtils.getNowDate());
+
+        //预约成功，发送消息提醒
+        Notification notification = new Notification();
+        notification.setUserId(appointment.getUserId());
+        notification.setTitile("教室预约成功");
+        notification.setContent(StringUtils.format("您已成功预约教室：{}，座位：{}，请于{}前往教室，如果需要取消请在预约记录取消",
+                studyRoom.getName(), seat.getName(), appointmentTimeStr));
+        notificationService.insertNotification(notification);
         return appointmentMapper.insertAppointment(appointment);
     }
 
